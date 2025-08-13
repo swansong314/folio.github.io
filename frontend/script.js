@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const message = document.getElementById('message');
     
     // Replace this URL with your actual API Gateway endpoint after deployment
-    const API_ENDPOINT = 'Gatewaycreate';
+    const API_ENDPOINT = 'https://psyqys4qb7.execute-api.us-east-1.amazonaws.com/prod/create';
     
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
