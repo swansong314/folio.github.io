@@ -44,7 +44,7 @@ jobs:
       - name: Deploy SAM application
         run: |
           cd backend
-          sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --resolve-s3 --stack-name portfolio-generator --parameter-overrides HCaptchaSecretKey="${{ secrets.HCAPTCHA_SECRET_KEY }}"
+          sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --resolve-s3 --capabilities CAPABILITY_IAM --stack-name portfolio-generator --parameter-overrides HCaptchaSecretKey="${{ secrets.HCAPTCHA_SECRET_KEY }}"
           
       - name: Clean up copied template
         run: |
