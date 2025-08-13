@@ -31,19 +31,25 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: prod
-      UsagePlan:
-        CreateUsagePlan: PER_API
-        Description: Usage plan for Portfolio Generator
-        Throttle:
-          BurstLimit: 20
-          RateLimit: 10
-        Quota:
-          Limit: 1000
-          Period: MONTH
       Cors:
         AllowMethods: "'POST, OPTIONS'"
         AllowHeaders: "'Content-Type, X-Amz-Date, Authorization, X-Api-Key, X-Amz-Security-Token'"
         AllowOrigin: "'*'"
+
+  PortfolioApiUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties:
+      UsagePlanName: PortfolioGeneratorUsagePlan
+      Description: Usage plan for Portfolio Generator
+      Throttle:
+        BurstLimit: 20
+        RateLimit: 10
+      Quota:
+        Limit: 1000
+        Period: MONTH
+      ApiStages:
+        - ApiId: !Ref PortfolioApi
+          Stage: !Ref PortfolioApi.Stage
 
 Parameters:
   HCaptchaSecretKey:
