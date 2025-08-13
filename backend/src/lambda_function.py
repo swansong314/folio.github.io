@@ -1,9 +1,14 @@
 import json
 import base64
 import os
+import logging
 from github import Github
 from github.GithubException import GithubException
 import requests
+
+# Set up logging
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 def load_template_file(file_path):
     """Load a file from the bundled portfolio-template directory"""
@@ -132,18 +137,38 @@ def verify_captcha(captcha_token):
         return False
 
 def lambda_handler(event, context):
-    # Handle CORS preflight requests
-    if event.get('httpMethod') == 'OPTIONS':
+    # Wrap everything in a try-catch to ensure CORS headers are always returned
+    try:
+        logger.info(f"Received event: {json.dumps(event)}")
+        
+        # Handle CORS preflight requests
+        if event.get('httpMethod') == 'OPTIONS':
+            logger.info("Handling OPTIONS request")
+            return {
+                'statusCode': 200,
+                'headers': {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Headers': 'Content-Type, X-Amz-Date, Authorization, X-Api-Key, X-Amz-Security-Token',
+                    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                },
+                'body': ''
+            }
+        
+        return handle_post_request(event, context)
+    
+    except Exception as e:
+        logger.error(f"Fatal exception in lambda_handler: {str(e)}", exc_info=True)
         return {
-            'statusCode': 200,
+            'statusCode': 500,
             'headers': {
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type, X-Amz-Date, Authorization, X-Api-Key, X-Amz-Security-Token',
+                'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Methods': 'POST, OPTIONS'
             },
-            'body': ''
+            'body': json.dumps({'error': f'Internal server error: {str(e)}'})
         }
-    
+
+def handle_post_request(event, context):
     try:
         # Parse the request body
         if 'body' in event:
@@ -311,6 +336,7 @@ def lambda_handler(event, context):
         }
     
     except Exception as e:
+        logger.error(f"Unhandled exception: {str(e)}", exc_info=True)
         return {
             'statusCode': 500,
             'headers': {

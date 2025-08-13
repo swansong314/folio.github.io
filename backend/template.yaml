@@ -32,6 +32,14 @@ Resources:
             RestApiId: !Ref PortfolioApi
       Policies:
         - AWSLambdaBasicExecutionRole
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::Account}:log-group:/aws/lambda/*'
 
   PortfolioApi:
     Type: AWS::Serverless::Api
