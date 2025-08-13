@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const message = document.getElementById('message');
     
     // Replace this URL with your actual API Gateway endpoint after deployment
-    const API_ENDPOINT = 'https://YOUR_API_GATEWAY_URL/prod/create';
+    const API_ENDPOINT = 'Gatewaycreate';
     
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
