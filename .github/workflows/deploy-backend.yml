@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-    contents: write  
+  contents: write
 
 jobs:
   deploy:
@@ -58,7 +58,7 @@ jobs:
         run: |
           cd backend
           API_URL=$(sam list stack-outputs --stack-name portfolio-generator --output table | grep PortfolioGeneratorApi | awk '{print $4}')
-          echo "api_url=${API_URL}create" >> $GITHUB_OUTPUT
+          echo "api_url=${API_URL}/create" >> $GITHUB_OUTPUT
 
       - name: Update frontend with API URL
         run: |

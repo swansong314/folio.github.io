@@ -7,6 +7,10 @@ on:
     branches:
       - main
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Deploy Backend"]
+    types:
+      - completed
 
 permissions:
   contents: read
