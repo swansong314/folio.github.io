@@ -132,6 +132,18 @@ def verify_captcha(captcha_token):
         return False
 
 def lambda_handler(event, context):
+    # Handle CORS preflight requests
+    if event.get('httpMethod') == 'OPTIONS':
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type, X-Amz-Date, Authorization, X-Api-Key, X-Amz-Security-Token',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS'
+            },
+            'body': ''
+        }
+    
     try:
         # Parse the request body
         if 'body' in event:

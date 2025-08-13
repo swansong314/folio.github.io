@@ -24,6 +24,12 @@ Resources:
             Path: /create
             Method: post
             RestApiId: !Ref PortfolioApi
+        CreatePortfolioOptions:
+          Type: Api
+          Properties:
+            Path: /create
+            Method: options
+            RestApiId: !Ref PortfolioApi
       Policies:
         - AWSLambdaBasicExecutionRole
 
