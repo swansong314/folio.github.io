@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Generator</title>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            margin: 20px;
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb, #f5576c);
+            border-radius: 22px;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        
+        h1 {
+            color: #1a202c;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 15px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            background: #fafafa;
+            font-family: inherit;
+        }
+        
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        .github-pat-info {
+            background: linear-gradient(135deg, #e7f3ff 0%, #f0f8ff 100%);
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .github-pat-info p {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+        
+        .github-pat-info a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        
+        .github-pat-info a:hover {
+            text-decoration: underline;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 40px auto 0;
+            position: relative;
+            overflow: hidden;
+            min-width: 200px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(102, 126, 234, 0.4);
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        button:hover::before {
+            left: 100%;
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .message.success {
+            background: linear-gradient(135deg, #d4edda 0%, #e8f5e8 100%);
+            border: 2px solid #10b981;
+            color: #047857;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.1);
+        }
+        
+        .message.error {
+            background: linear-gradient(135deg, #fed7d7 0%, #fef2f2 100%);
+            border: 2px solid #f56565;
+            color: #c53030;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(245, 101, 101, 0.1);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .loading {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #667eea;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .h-captcha {
+            margin: 25px 0;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .captcha-info {
+            background: linear-gradient(135deg, #fff3cd 0%, #fef7d7 100%);
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 12px;
+            font-size: 14px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Portfolio Generator</h1>
+        <p class="subtitle">
+            Generate your personal portfolio website hosted on GitHub Pages
+        </p>
+        
+        <form id="portfolioForm">
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" required placeholder="John Doe">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required placeholder="john@example.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="bio">Bio/Description</label>
+                <textarea id="bio" name="bio" placeholder="Tell us about yourself, your skills, and what you do..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="projects">Projects</label>
+                <textarea id="projects" name="projects" placeholder="List your projects, achievements, or anything you'd like to showcase..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="github_pat">GitHub Personal Access Token *</label>
+                <div class="github-pat-info">
+                    <p><strong>You'll need a GitHub Personal Access Token to create your portfolio.</strong></p>
+                    <p>1. Go to <a href="https://github.com/settings/tokens/new" target="_blank">GitHub Settings → Personal access tokens</a></p>
+                    <p>2. Click "Generate new token (classic)"</p>
+                    <p>3. Give it a name and select the <strong>"repo"</strong> scope</p>
+                    <p>4. Click "Generate token" and copy it here</p>
+                </div>
+                <input type="password" id="github_pat" name="github_pat" required placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+            </div>
+            
+            <!-- <div class="captcha-info">
+                <strong>⚠️ CAPTCHA Configuration Required</strong><br>
+                Please replace "YOUR_HCAPTCHA_SITE_KEY" with your actual hCaptcha site key from <a href="https://www.hcaptcha.com/" target="_blank">hCaptcha.com</a>
+            </div> -->
+            
+            <div class="form-group">
+                <div class="h-captcha" data-sitekey="adaa7b70-342c-4b70-b21c-f3940d9c37be"></div>
+            </div>
+            
+            <button type="submit" id="submitBtn">Generate Portfolio</button>
+        </form>
+        
+        <div id="loading" class="loading">
+            Generating your portfolio...
+        </div>
+        
+        <div id="message" class="message"></div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

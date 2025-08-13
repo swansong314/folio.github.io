@@ -1,0 +1,51 @@
+name: Deploy Backend
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+      - 'portfolio-template/**'
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          
+      - name: Setup SAM CLI
+        uses: aws-actions/setup-sam@v2
+        
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          
+      - name: Copy portfolio template to backend
+        run: |
+          cp -r portfolio-template/ backend/src/
+          
+      - name: Build SAM application
+        run: |
+          cd backend
+          sam build
+          
+      - name: Deploy SAM application
+        run: |
+          cd backend
+          sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name portfolio-generator --parameter-overrides HCaptchaSecretKey="${{ secrets.HCAPTCHA_SECRET_KEY }}"
+          
+      - name: Clean up copied template
+        run: |
+          rm -rf backend/src/portfolio-template

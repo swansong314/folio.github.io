@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Portfolio Generator Backend
+
+Globals:
+  Function:
+    Timeout: 60
+    Runtime: python3.9
+
+Resources:
+  PortfolioGeneratorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.9
+      Environment:
+        Variables:
+          HCAPTCHA_SECRET_KEY: !Ref HCaptchaSecretKey
+      Events:
+        CreatePortfolio:
+          Type: Api
+          Properties:
+            Path: /create
+            Method: post
+            RestApiId: !Ref PortfolioApi
+      Policies:
+        - AWSLambdaBasicExecutionRole
+
+  PortfolioApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      UsagePlan:
+        CreateUsagePlan: PER_API
+        Description: Usage plan for Portfolio Generator
+        Throttle:
+          BurstLimit: 20
+          RateLimit: 10
+        Quota:
+          Limit: 1000
+          Period: MONTH
+      Cors:
+        AllowMethods: "'POST, OPTIONS'"
+        AllowHeaders: "'Content-Type, X-Amz-Date, Authorization, X-Api-Key, X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+
+Parameters:
+  HCaptchaSecretKey:
+    Type: String
+    Description: hCaptcha Secret Key for CAPTCHA verification
+    NoEcho: true
+    Default: ""
+
+Outputs:
+  PortfolioGeneratorApi:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${PortfolioApi}.execute-api.${AWS::Region}.amazonaws.com/prod/"
+  PortfolioGeneratorFunction:
+    Description: "Portfolio Generator Lambda Function ARN"
+    Value: !GetAtt PortfolioGeneratorFunction.Arn
