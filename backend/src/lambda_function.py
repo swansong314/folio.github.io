@@ -275,7 +275,7 @@ def handle_post_request(event, context):
             auto_init=True
         )
 
-        # Load and customize _config.yml from template
+        # Load and customize all template files
         config_content = load_template_file('_config.yml')
         config_content = config_content.replace('Your Name', name)
         config_content = config_content.replace('your.email@example.com', email)
@@ -283,43 +283,59 @@ def handle_post_request(event, context):
         config_content = config_content.replace('"https://username.github.io"', f'"https://{repo_name}"')
         config_content = config_content.replace('github_username: username', f'github_username: {username}')
 
-        # Create and commit _config.yml
-        repo.create_file(
-            "_config.yml",
-            "Initial configuration",
-            config_content
-        )
-
-        # Load and customize index.md from template
         index_content = load_template_file('index.md')
         index_content = index_content.replace('Welcome to My Portfolio', f"Welcome to {name}'s Portfolio")
         index_content = index_content.replace('This is a brief introduction about myself and my work.', bio)
         index_content = index_content.replace('Here are some of my notable projects:\n\n- Project 1: Description of your first project\n- Project 2: Description of your second project\n- Project 3: Description of your third project', projects)
 
-        repo.create_file(
-            "index.md",
-            "Add homepage content",
-            index_content
-        )
-
-        # Load GitHub Actions workflow from template
         workflow_content = load_template_file('.github/workflows/deploy.yml')
-
-        # Create .github/workflows directory and workflow file
-        repo.create_file(
-            ".github/workflows/deploy.yml",
-            "Add GitHub Pages deployment workflow",
-            workflow_content
-        )
-
-        # Load Gemfile from template
         gemfile_content = load_template_file('Gemfile')
 
-        repo.create_file(
-            "Gemfile",
-            "Add Jekyll dependencies",
-            gemfile_content
+        # Get the main branch reference
+        main_ref = repo.get_git_ref("heads/main")
+        main_sha = main_ref.object.sha
+        base_tree = repo.get_git_tree(main_sha)
+
+        # Create all files in a single commit
+        element_list = [
+            {
+                'path': '_config.yml',
+                'mode': '100644',
+                'type': 'blob',
+                'content': config_content
+            },
+            {
+                'path': 'index.md',
+                'mode': '100644',
+                'type': 'blob',
+                'content': index_content
+            },
+            {
+                'path': '.github/workflows/deploy.yml',
+                'mode': '100644',
+                'type': 'blob',
+                'content': workflow_content
+            },
+            {
+                'path': 'Gemfile',
+                'mode': '100644',
+                'type': 'blob',
+                'content': gemfile_content
+            }
+        ]
+
+        # Create new tree with all files
+        tree = repo.create_git_tree(element_list, base_tree)
+        
+        # Create commit
+        commit = repo.create_git_commit(
+            f"Initial portfolio setup for {name}",
+            tree,
+            [repo.get_git_commit(main_sha)]
         )
+        
+        # Update main branch to point to new commit
+        main_ref.edit(commit.sha)
 
         return {
             'statusCode': 200,
