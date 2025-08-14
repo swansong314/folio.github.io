@@ -221,9 +221,30 @@ def handle_post_request(event, context):
             }
 
         # Authenticate with GitHub
-        g = Github(github_pat)
-        user = g.get_user()
-        username = user.login
+        try:
+            logger.info("Authenticating with GitHub")
+            g = Github(github_pat)
+            user = g.get_user()
+            username = user.login
+            logger.info(f"Successfully authenticated as user: {username}")
+        except GithubException as e:
+            logger.error(f"GitHub authentication failed: {e.status} - {e.data}")
+            if e.status == 401:
+                error_message = "Invalid GitHub Personal Access Token. Please check your token."
+            elif e.status == 403:
+                error_message = "GitHub API rate limit exceeded or insufficient token permissions."
+            else:
+                error_message = f"GitHub authentication error: {e.data.get('message', str(e)) if hasattr(e, 'data') and e.data else str(e)}"
+            
+            return {
+                'statusCode': 400,
+                'headers': {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+                },
+                'body': json.dumps({'error': error_message})
+            }
 
         # Create repository name
         repo_name = f"{username}.github.io"
