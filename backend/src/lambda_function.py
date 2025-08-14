@@ -361,7 +361,8 @@ def handle_post_request(event, context):
         elif e.status == 422 and 'name already exists' in str(e.data):
             error_message = f"Repository {data.get('name', 'unknown')}.github.io already exists in your account."
         else:
-            error_message = f"GitHub API error: {e.data.get('message', str(e)) if hasattr(e, 'data') and e.data else str(e)}"
+            logger.error(f"GitHub exception details - Status: {e.status}, Data: {e.data if hasattr(e, 'data') else 'No data'}, Full exception: {str(e)}")
+            error_message = f"GitHub API error (status {e.status}): {e.data.get('message', str(e)) if hasattr(e, 'data') and e.data else str(e)}. Full exception: {str(e)} | Data: {e.data if hasattr(e, 'data') else 'No data'}"
         
         return {
             'statusCode': 400,
