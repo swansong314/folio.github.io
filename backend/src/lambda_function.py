@@ -4,6 +4,7 @@ import os
 import logging
 from github import Github
 from github.GithubException import GithubException
+from github import InputGitTreeElement
 import requests
 
 # Set up logging
@@ -298,30 +299,30 @@ def handle_post_request(event, context):
 
         # Create all files in a single commit
         element_list = [
-            {
-                'path': '_config.yml',
-                'mode': '100644',
-                'type': 'blob',
-                'content': config_content
-            },
-            {
-                'path': 'index.md',
-                'mode': '100644',
-                'type': 'blob',
-                'content': index_content
-            },
-            {
-                'path': '.github/workflows/deploy.yml',
-                'mode': '100644',
-                'type': 'blob',
-                'content': workflow_content
-            },
-            {
-                'path': 'Gemfile',
-                'mode': '100644',
-                'type': 'blob',
-                'content': gemfile_content
-            }
+            InputGitTreeElement(
+                path='_config.yml',
+                mode='100644',
+                type='blob',
+                content=config_content
+            ),
+            InputGitTreeElement(
+                path='index.md',
+                mode='100644',
+                type='blob',
+                content=index_content
+            ),
+            InputGitTreeElement(
+                path='.github/workflows/deploy.yml',
+                mode='100644',
+                type='blob',
+                content=workflow_content
+            ),
+            InputGitTreeElement(
+                path='Gemfile',
+                mode='100644',
+                type='blob',
+                content=gemfile_content
+            )
         ]
 
         # Create new tree with all files
