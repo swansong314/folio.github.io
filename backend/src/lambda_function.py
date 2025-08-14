@@ -267,13 +267,13 @@ def handle_post_request(event, context):
                 raise e
             # Repository doesn't exist, which is what we want
 
-        # Create new repository
+        # Create new repository with auto_init set to False
         repo = user.create_repo(
             name=repo_name,
             description=f"Personal portfolio website for {name}",
             homepage=f"https://{repo_name}",
             private=False,
-            auto_init=False
+            auto_init=False  # Set to False to create an empty repository
         )
 
         # Load and customize all template files
@@ -291,52 +291,35 @@ def handle_post_request(event, context):
 
         workflow_content = load_template_file('.github/workflows/deploy.yml')
         gemfile_content = load_template_file('Gemfile')
-
-        # Get the main branch reference
-        main_ref = repo.get_git_ref("heads/main")
-        main_sha = main_ref.object.sha
-        base_tree = repo.get_git_tree(main_sha)
-
-        # Create all files in a single commit
-        element_list = [
-            InputGitTreeElement(
-                path='_config.yml',
-                mode='100644',
-                type='blob',
-                content=config_content
-            ),
-            InputGitTreeElement(
-                path='index.md',
-                mode='100644',
-                type='blob',
-                content=index_content
-            ),
-            InputGitTreeElement(
-                path='.github/workflows/deploy.yml',
-                mode='100644',
-                type='blob',
-                content=workflow_content
-            ),
-            InputGitTreeElement(
-                path='Gemfile',
-                mode='100644',
-                type='blob',
-                content=gemfile_content
-            )
-        ]
-
-        # Create new tree with all files
-        tree = repo.create_git_tree(element_list, base_tree)
         
-        # Create commit
+        # Create blobs for each file
+        blob_config = repo.create_git_blob(config_content, "utf-8")
+        blob_index = repo.create_git_blob(index_content, "utf-8")
+        blob_workflow = repo.create_git_blob(workflow_content, "utf-8")
+        blob_gemfile = repo.create_git_blob(gemfile_content, "utf-8")
+
+        # Create a tree with the blobs
+        element_list = [
+            InputGitTreeElement(path='_config.yml', mode='100644', type='blob', sha=blob_config.sha),
+            InputGitTreeElement(path='index.md', mode='100644', type='blob', sha=blob_index.sha),
+            # Note the nested structure for the workflow file
+            InputGitTreeElement(path='.github/workflows/deploy.yml', mode='100644', type='blob', sha=blob_workflow.sha),
+            InputGitTreeElement(path='Gemfile', mode='100644', type='blob', sha=blob_gemfile.sha)
+        ]
+        
+        # Create a tree
+        tree = repo.create_git_tree(element_list)
+
+        # Create the initial commit
         commit = repo.create_git_commit(
             f"Initial portfolio setup for {name}",
             tree,
-            [repo.get_git_commit(main_sha)]
+            [] # No parent commits as this is the first one
         )
         
-        # Update main branch to point to new commit
-        main_ref.edit(commit.sha)
+        # Create the main branch and point it to the new commit
+        repo.create_git_ref(ref=f"refs/heads/main", sha=commit.sha)
+
 
         return {
             'statusCode': 200,
