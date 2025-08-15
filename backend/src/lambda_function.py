@@ -299,28 +299,28 @@ def handle_post_request(event, context):
             content=config_content,
             branch='main'
         )
-        time.sleep(0.07)
+        time.sleep(1)
         repo.create_file(
             path='index.md',
             message='Add portfolio index page',
             content=index_content,
             branch='main'
         )
-        time.sleep(0.07)
+        time.sleep(1)
         repo.create_file(
             path='.github/workflows/deploy.yml', # This will correctly create the directories
             message='Add GitHub Pages deployment workflow',
             content=workflow_content,
             branch='main'
         )
-        time.sleep(0.07)
+        time.sleep(1)
         repo.create_file(
             path='Gemfile',
             message='Add Gemfile',
             content=gemfile_content,
             branch='main'
         )
-        time.sleep(0.07)
+        time.sleep(1)
 
         return {
             'statusCode': 200,
