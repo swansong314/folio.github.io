@@ -293,19 +293,19 @@ def handle_post_request(event, context):
         workflow_content = load_template_file('.github/workflows/deploy.yml')
         gemfile_content = load_template_file('Gemfile')
 
-        repo.create_file(
-            path='_config.yml',
-            message='Add Jekyll config file',
-            content=config_content,
-            branch='main'
-        )
-        time.sleep(1)
-        repo.create_file(
-            path='index.md',
-            message='Add portfolio index page',
-            content=index_content,
-            branch='main'
-        )
+        # repo.create_file(
+        #     path='_config.yml',
+        #     message='Add Jekyll config file',
+        #     content=config_content,
+        #     branch='main'
+        # )
+        # time.sleep(1)
+        # repo.create_file(
+        #     path='index.md',
+        #     message='Add portfolio index page',
+        #     content=index_content,
+        #     branch='main'
+        # )
         time.sleep(1)
         repo.create_file(
             path='.github/workflows/deploy.yml', # This will correctly create the directories
@@ -314,13 +314,13 @@ def handle_post_request(event, context):
             branch='main'
         )
         time.sleep(1)
-        repo.create_file(
-            path='Gemfile',
-            message='Add Gemfile',
-            content=gemfile_content,
-            branch='main'
-        )
-        time.sleep(1)
+        # repo.create_file(
+        #     path='Gemfile',
+        #     message='Add Gemfile',
+        #     content=gemfile_content,
+        #     branch='main'
+        # )
+        # time.sleep(1)
 
         return {
             'statusCode': 200,
