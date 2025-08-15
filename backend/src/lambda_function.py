@@ -305,13 +305,14 @@ def handle_post_request(event, context):
             content=index_content,
             branch='main'
         )
-        # time.sleep(1)
-        # repo.create_file(
-        #     path='.github/workflows/deploy.yml', # This will correctly create the directories
-        #     message='Add GitHub Pages deployment workflow',
-        #     content=workflow_content,
-        #     branch='main'
-        # )
+        # OAuth app tokens and personal access tokens (classic) need the repo scope to use this endpoint. 
+        # The workflow scope is also required in order to modify files in the .github/workflows directory.
+        repo.create_file(
+            path='.github/workflows/deploy.yml', 
+            message='Add GitHub Pages deployment workflow',
+            content=workflow_content,
+            branch='main'
+        )
         repo.create_file(
             path='Gemfile',
             message='Add Gemfile',
