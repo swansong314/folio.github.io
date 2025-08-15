@@ -2,6 +2,7 @@ import json
 import base64
 import os
 import logging
+import time
 from github import Github
 from github.GithubException import GithubException
 from github import InputGitTreeElement
@@ -298,28 +299,28 @@ def handle_post_request(event, context):
             content=config_content,
             branch='main'
         )
-        sleep(0.07)
+        time.sleep(0.07)
         repo.create_file(
             path='index.md',
             message='Add portfolio index page',
             content=index_content,
             branch='main'
         )
-        sleep(0.07)
+        time.sleep(0.07)
         repo.create_file(
             path='.github/workflows/deploy.yml', # This will correctly create the directories
             message='Add GitHub Pages deployment workflow',
             content=workflow_content,
             branch='main'
         )
-        sleep(0.07)
+        time.sleep(0.07)
         repo.create_file(
             path='Gemfile',
             message='Add Gemfile',
             content=gemfile_content,
             branch='main'
         )
-        sleep(0.07)
+        time.sleep(0.07)
 
         return {
             'statusCode': 200,
