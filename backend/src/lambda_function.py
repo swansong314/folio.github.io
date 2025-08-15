@@ -267,13 +267,13 @@ def handle_post_request(event, context):
                 raise e
             # Repository doesn't exist, which is what we want
 
-        # Create new repository with auto_init set to False
+        # Create new repository
         repo = user.create_repo(
             name=repo_name,
             description=f"Personal portfolio website for {name}",
             homepage=f"https://{repo_name}",
             private=False,
-            auto_init=False  # Set to False to create an empty repository
+            auto_init=True
         )
 
         # Load and customize all template files
@@ -291,35 +291,35 @@ def handle_post_request(event, context):
 
         workflow_content = load_template_file('.github/workflows/deploy.yml')
         gemfile_content = load_template_file('Gemfile')
-        
-        # Create blobs for each file
-        blob_config = repo.create_git_blob(config_content, "utf-8")
-        blob_index = repo.create_git_blob(index_content, "utf-8")
-        blob_workflow = repo.create_git_blob(workflow_content, "utf-8")
-        blob_gemfile = repo.create_git_blob(gemfile_content, "utf-8")
 
-        # Create a tree with the blobs
-        element_list = [
-            InputGitTreeElement(path='_config.yml', mode='100644', type='blob', sha=blob_config.sha),
-            InputGitTreeElement(path='index.md', mode='100644', type='blob', sha=blob_index.sha),
-            # Note the nested structure for the workflow file
-            InputGitTreeElement(path='.github/workflows/deploy.yml', mode='100644', type='blob', sha=blob_workflow.sha),
-            InputGitTreeElement(path='Gemfile', mode='100644', type='blob', sha=blob_gemfile.sha)
-        ]
-        
-        # Create a tree
-        tree = repo.create_git_tree(element_list)
-
-        # Create the initial commit
-        commit = repo.create_git_commit(
-            f"Initial portfolio setup for {name}",
-            tree,
-            [] # No parent commits as this is the first one
+        repo.create_file(
+            path='_config.yml',
+            message='Add Jekyll config file',
+            content=config_content,
+            branch='main'
         )
-        
-        # Create the main branch and point it to the new commit
-        repo.create_git_ref(ref=f"refs/heads/main", sha=commit.sha)
-
+        sleep(0.07)
+        repo.create_file(
+            path='index.md',
+            message='Add portfolio index page',
+            content=index_content,
+            branch='main'
+        )
+        sleep(0.07)
+        repo.create_file(
+            path='.github/workflows/deploy.yml', # This will correctly create the directories
+            message='Add GitHub Pages deployment workflow',
+            content=workflow_content,
+            branch='main'
+        )
+        sleep(0.07)
+        repo.create_file(
+            path='Gemfile',
+            message='Add Gemfile',
+            content=gemfile_content,
+            branch='main'
+        )
+        sleep(0.07)
 
         return {
             'statusCode': 200,
@@ -344,7 +344,8 @@ def handle_post_request(event, context):
         elif e.status == 422 and 'name already exists' in str(e.data):
             error_message = f"Repository {data.get('name', 'unknown')}.github.io already exists in your account."
         else:
-            error_message = f"GitHub API error: {e.data.get('message', str(e)) if hasattr(e, 'data') and e.data else str(e)}"
+            logger.error(f"GitHub exception details - Status: {e.status}, Data: {e.data if hasattr(e, 'data') else 'No data'}, Full exception: {str(e)}")
+            error_message = f"GitHub API error (status {e.status}): {e.data.get('message', str(e)) if hasattr(e, 'data') and e.data else str(e)}. Full exception: {str(e)} | Data: {e.data if hasattr(e, 'data') else 'No data'}"
         
         return {
             'statusCode': 400,
