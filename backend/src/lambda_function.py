@@ -119,6 +119,98 @@ jobs:
     }
     return fallbacks.get(file_path, '')
 
+def generate_config_content(name, email, alt_email, phone1, phone2, bio, links, username, repo_name):
+    """Generate Jekyll _config.yml with enhanced user data"""
+    config = f"""title: {name}
+email: {email}
+description: {bio}
+url: "https://{repo_name}"
+baseurl: ""
+
+# Build settings
+markdown: kramdown
+theme: minima
+plugins:
+  - jekyll-feed
+
+# Social links
+github_username: {username}"""
+    
+    # Add alternative email if provided
+    if alt_email:
+        config += f"\nalt_email: {alt_email}"
+    
+    # Add phone numbers if provided
+    if phone1:
+        config += f"\nphone: {phone1}"
+    if phone2:
+        config += f"\nalt_phone: {phone2}"
+    
+    # Add professional links
+    if links:
+        config += "\n\n# Professional Links"
+        for link in links:
+            if link.get('type') and link.get('url'):
+                config += f"\n{link['type']}_url: {link['url']}"
+    
+    return config
+
+def generate_index_content(name, bio, projects, experience, education, achievements):
+    """Generate Jekyll index.md with enhanced user data"""
+    content = "---\nlayout: home\n---\n\n"
+    
+    if bio:
+        content += f"{bio}\n\n"
+    
+    # Projects section
+    if projects:
+        content += "## Projects\n\n"
+        for project in projects:
+            if project.get('title'):
+                content += f"### {project['title']}\n\n"
+                if project.get('description'):
+                    content += f"{project['description']}\n\n"
+                if project.get('technologies'):
+                    content += f"**Technologies:** {project['technologies']}\n\n"
+                if project.get('link'):
+                    content += f"[View Project]({project['link']})\n\n"
+                content += "---\n\n"
+    
+    # Experience section
+    if experience:
+        content += "## Experience\n\n"
+        for exp in experience:
+            if exp.get('title') and exp.get('company'):
+                content += f"### {exp['title']} at {exp['company']}\n\n"
+                if exp.get('duration'):
+                    content += f"**Duration:** {exp['duration']}\n\n"
+                if exp.get('description'):
+                    content += f"{exp['description']}\n\n"
+                content += "---\n\n"
+    
+    # Education section
+    if education:
+        content += "## Education\n\n"
+        for edu in education:
+            if edu.get('qualification') and edu.get('institution'):
+                content += f"### {edu['qualification']}\n\n"
+                content += f"**Institution:** {edu['institution']}\n\n"
+                if edu.get('year'):
+                    content += f"**Year:** {edu['year']}\n\n"
+                content += "---\n\n"
+    
+    # Achievements section
+    if achievements:
+        content += "## Achievements\n\n"
+        for achievement in achievements:
+            if achievement.get('title'):
+                content += f"### {achievement['title']}\n\n"
+                if achievement.get('description'):
+                    content += f"{achievement['description']}\n\n"
+                content += "---\n\n"
+    
+    return content
+
 def verify_captcha(captcha_token):
     """Verify hCaptcha token"""
     if not captcha_token:
@@ -195,8 +287,15 @@ def handle_post_request(event, context):
         github_pat = data.get('github_pat')
         name = data.get('name', '')
         email = data.get('email', '')
+        alt_email = data.get('altEmail', '')
+        phone1 = data.get('phone1', '')
+        phone2 = data.get('phone2', '')
         bio = data.get('bio', '')
-        projects = data.get('projects', '')
+        links = data.get('links', [])
+        projects = data.get('projects', [])
+        experience = data.get('experience', [])
+        education = data.get('education', [])
+        achievements = data.get('achievements', [])
         captcha_token = data.get('captcha_token')
         
         # Verify CAPTCHA first
@@ -278,17 +377,8 @@ def handle_post_request(event, context):
         )
 
         # Load and customize all template files
-        config_content = load_template_file('_config.yml')
-        config_content = config_content.replace('Your Name', name)
-        config_content = config_content.replace('your.email@example.com', email)
-        config_content = config_content.replace('A brief description about yourself', bio)
-        config_content = config_content.replace('"https://username.github.io"', f'"https://{repo_name}"')
-        config_content = config_content.replace('github_username: username', f'github_username: {username}')
-
-        index_content = load_template_file('index.md')
-        index_content = index_content.replace('Welcome to My Portfolio', f"Welcome to {name}'s Portfolio")
-        index_content = index_content.replace('This is a brief introduction about myself and my work.', bio)
-        index_content = index_content.replace('Here are some of my notable projects:\n\n- Project 1: Description of your first project\n- Project 2: Description of your second project\n- Project 3: Description of your third project', projects)
+        config_content = generate_config_content(name, email, alt_email, phone1, phone2, bio, links, username, repo_name)
+        index_content = generate_index_content(name, bio, projects, experience, education, achievements)
 
         workflow_content = load_template_file('.github/workflows/deploy.yml')
         gemfile_content = load_template_file('Gemfile')

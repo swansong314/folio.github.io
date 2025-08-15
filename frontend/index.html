@@ -235,6 +235,118 @@
             font-size: 14px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
+        
+        .form-section {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .section-title {
+            color: #1a202c;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 25px 0;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .add-button, .remove-project, .remove-experience, .remove-education, .remove-achievement, .remove-link {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .add-button:hover {
+            background: #3182ce;
+            transform: translateY(-1px);
+        }
+        
+        .remove-project, .remove-experience, .remove-education, .remove-achievement, .remove-link {
+            background: #f56565;
+            margin-left: 10px;
+        }
+        
+        .remove-project:hover, .remove-experience:hover, .remove-education:hover, .remove-achievement:hover, .remove-link:hover {
+            background: #e53e3e;
+            transform: translateY(-1px);
+        }
+        
+        .project-item, .experience-item, .education-item, .achievement-item {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .project-item:hover, .experience-item:hover, .education-item:hover, .achievement-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+        
+        .link-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        
+        .link-type {
+            flex: 0 0 120px;
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fafafa;
+        }
+        
+        .link-url {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 15px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            background: #fafafa;
+            font-family: inherit;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -245,29 +357,174 @@
         </p>
         
         <form id="portfolioForm">
-            <div class="form-group">
-                <label for="name">Full Name *</label>
-                <input type="text" id="name" name="name" required placeholder="John Doe">
+            <!-- Personal Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">Personal Information</h2>
+                
+                <div class="form-group">
+                    <label for="name">Full Name *</label>
+                    <input type="text" id="name" name="name" required placeholder="John Doe">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" required placeholder="john@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="altEmail">Alternate Email</label>
+                    <input type="email" id="altEmail" name="altEmail" placeholder="alternate@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone1">Contact Number</label>
+                    <input type="tel" id="phone1" name="phone1" placeholder="+1 (555) 123-4567">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone2">Alternate Contact Number</label>
+                    <input type="tel" id="phone2" name="phone2" placeholder="+1 (555) 987-6543">
+                </div>
+                
+                <div class="form-group">
+                    <label for="bio">Bio/Description</label>
+                    <textarea id="bio" name="bio" placeholder="Tell us about yourself, your skills, and what you do..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Professional Links</label>
+                    <div id="linksContainer">
+                        <div class="link-item">
+                            <select name="linkType[]" class="link-type">
+                                <option value="github">GitHub</option>
+                                <option value="linkedin">LinkedIn</option>
+                                <option value="leetcode">LeetCode</option>
+                                <option value="portfolio">Portfolio</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <input type="url" name="linkUrl[]" placeholder="https://github.com/username" class="link-url">
+                            <button type="button" class="remove-link">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" id="addLink" class="add-button">Add Link</button>
+                </div>
             </div>
-            
-            <div class="form-group">
-                <label for="email">Email Address *</label>
-                <input type="email" id="email" name="email" required placeholder="john@example.com">
+
+            <!-- Projects Section -->
+            <div class="form-section">
+                <h2 class="section-title">Projects</h2>
+                <div id="projectsContainer">
+                    <div class="project-item">
+                        <div class="form-group">
+                            <label>Project Title *</label>
+                            <input type="text" name="projectTitle[]" required placeholder="My Awesome Project">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea name="projectDescription[]" placeholder="Brief description of the project..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Technologies Used</label>
+                            <input type="text" name="projectTechnologies[]" placeholder="JavaScript, React, Node.js">
+                        </div>
+                        <div class="form-group">
+                            <label>Project Links</label>
+                            <input type="url" name="projectLink[]" placeholder="https://github.com/username/project">
+                        </div>
+                        <button type="button" class="remove-project">Remove Project</button>
+                    </div>
+                </div>
+                <button type="button" id="addProject" class="add-button">Add Project</button>
             </div>
-            
-            <div class="form-group">
-                <label for="bio">Bio/Description</label>
-                <textarea id="bio" name="bio" placeholder="Tell us about yourself, your skills, and what you do..."></textarea>
+
+            <!-- Experience Section -->
+            <div class="form-section">
+                <h2 class="section-title">Experience</h2>
+                <div id="experienceContainer">
+                    <div class="experience-item">
+                        <div class="form-group">
+                            <label>Job Title *</label>
+                            <input type="text" name="experienceTitle[]" required placeholder="Software Engineer">
+                        </div>
+                        <div class="form-group">
+                            <label>Company *</label>
+                            <input type="text" name="experienceCompany[]" required placeholder="Tech Corp Inc.">
+                        </div>
+                        <div class="form-group">
+                            <label>Duration</label>
+                            <input type="text" name="experienceDuration[]" placeholder="Jan 2020 - Present">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea name="experienceDescription[]" placeholder="Key responsibilities and achievements..."></textarea>
+                        </div>
+                        <button type="button" class="remove-experience">Remove Experience</button>
+                    </div>
+                </div>
+                <button type="button" id="addExperience" class="add-button">Add Experience</button>
             </div>
-            
-            <div class="form-group">
-                <label for="projects">Projects</label>
-                <textarea id="projects" name="projects" placeholder="List your projects, achievements, or anything you'd like to showcase..."></textarea>
+
+            <!-- Education Section -->
+            <div class="form-section">
+                <h2 class="section-title">Education</h2>
+                <div id="educationContainer">
+                    <div class="education-item">
+                        <div class="form-group">
+                            <label>Education Type *</label>
+                            <select name="educationType[]" required>
+                                <option value="">Select Type</option>
+                                <option value="bachelors">Bachelor's Degree</option>
+                                <option value="masters">Master's Degree</option>
+                                <option value="phd">Ph.D.</option>
+                                <option value="diploma">Diploma</option>
+                                <option value="certificate">Certificate</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Qualification *</label>
+                            <input type="text" name="educationQualification[]" required placeholder="B.Tech Computer Science">
+                        </div>
+                        <div class="form-group">
+                            <label>Institution *</label>
+                            <input type="text" name="educationInstitution[]" required placeholder="University of Technology">
+                        </div>
+                        <div class="form-group">
+                            <label>Year/Duration</label>
+                            <input type="text" name="educationYear[]" placeholder="2018-2022">
+                        </div>
+                        <button type="button" class="remove-education">Remove Education</button>
+                    </div>
+                </div>
+                <button type="button" id="addEducation" class="add-button">Add Education</button>
             </div>
-            
-            <div class="form-group">
-                <label for="github_pat">GitHub Personal Access Token *</label>
-                <div class="github-pat-info">
+
+            <!-- Achievements Section -->
+            <div class="form-section">
+                <h2 class="section-title">Achievements</h2>
+                <div id="achievementsContainer">
+                    <div class="achievement-item">
+                        <div class="form-group">
+                            <label>Achievement Title *</label>
+                            <input type="text" name="achievementTitle[]" required placeholder="Winner of Hackathon 2023">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea name="achievementDescription[]" placeholder="Details about the achievement..."></textarea>
+                        </div>
+                        <button type="button" class="remove-achievement">Remove Achievement</button>
+                    </div>
+                </div>
+                <button type="button" id="addAchievement" class="add-button">Add Achievement</button>
+            </div>
+
+            <!-- GitHub PAT and Security Section -->
+            <div class="form-section">
+                <h2 class="section-title">GitHub Authentication & Security</h2>
+                
+                <div class="form-group">
+                    <label for="github_pat">GitHub Personal Access Token *</label>
+                    <div class="github-pat-info">
                     <p><strong>You'll need a GitHub Personal Access Token to create your portfolio.</strong></p>
                     <p>1. Go to <a href="https://github.com/settings/tokens/new" target="_blank">GitHub Settings → Personal access tokens</a></p>
                     <p>2. Click "Generate new token (classic)"</p>
@@ -282,8 +539,9 @@
                 Please replace "YOUR_HCAPTCHA_SITE_KEY" with your actual hCaptcha site key from <a href="https://www.hcaptcha.com/" target="_blank">hCaptcha.com</a>
             </div> -->
             
-            <div class="form-group">
-                <div class="h-captcha" data-sitekey="adaa7b70-342c-4b70-b21c-f3940d9c37be"></div>
+                <div class="form-group">
+                    <div class="h-captcha" data-sitekey="adaa7b70-342c-4b70-b21c-f3940d9c37be"></div>
+                </div>
             </div>
             
             <button type="submit" id="submitBtn">Generate Portfolio</button>
